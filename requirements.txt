@@ -1,0 +1,11 @@
+torch
+transformers
+streamlit
+pandas
+numpy
+scikit-learn
+requests
+newsapi-python
+beautifulsoup4
+python-dotenv
+plotly

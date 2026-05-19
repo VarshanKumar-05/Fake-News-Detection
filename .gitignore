@@ -13,11 +13,11 @@ __pycache__/
 *$py.class
 
 # PyTorch/HuggingFace model files
-*.pt
-*.pth
-*.safetensors
-*.bin
-models/
+# *.pt
+# *.pth
+# *.safetensors
+# *.bin
+# models/
 
 # Logs
 logs/

@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  fake-news-app:
+    # Build the Docker image from the current directory using Dockerfile
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fake-news-detector
+    # Map port 8501 on the host to port 8501 in the container
+    ports:
+      - "8501:8501"
+    # Load environment variables from the .env file (like NewsAPI keys)
+    env_file:
+      - .env
+    # Optional: Mount data and models folders to persist changes or avoid copying large files
+    # volumes:
+    #   - ./data:/app/data
+    #   - ./models:/app/models
+    # Automatically restart the container if it crashes (good for production)
+    restart: unless-stopped

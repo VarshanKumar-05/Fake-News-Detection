@@ -1,5 +1,5 @@
 # Use an official lightweight Python image
-FROM python:3.9-slim
+FROM python:3.11
 
 # Set environment variables
 # PYTHONDONTWRITEBYTECODE=1 prevents Python from writing .pyc files

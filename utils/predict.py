@@ -5,8 +5,8 @@ import re
 from .preprocessing import clean_text
 import os
 
-# Define paths
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# Define paths robustly for Docker and Local compatibility
+BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 MODEL_DIR = os.path.join(BASE_DIR, "models", "saved_model")
 
 # Sensational/Suspicious lexicon for lightweight highlighting
@@ -22,13 +22,25 @@ class FakeNewsPredictor:
     def __init__(self, model_path=MODEL_DIR):
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         
+        # --- DEBUG LOGGING ---
+        print("\n" + "="*50, flush=True)
+        print(f"DEBUG: Current working directory: {os.getcwd()}", flush=True)
+        print(f"DEBUG: Absolute model path expected: {model_path}", flush=True)
+        print(f"DEBUG: Does model path exist? {os.path.exists(model_path)}", flush=True)
+        
+        if os.path.exists(model_path):
+            print(f"DEBUG: Files in model path: {os.listdir(model_path)}", flush=True)
+        else:
+            print("DEBUG: WARNING! Model directory is MISSING! Check Dockerfile COPY command and .dockerignore.", flush=True)
+        print("="*50 + "\n", flush=True)
+        
         try:
             self.tokenizer = DistilBertTokenizer.from_pretrained(model_path)
             self.model = DistilBertForSequenceClassification.from_pretrained(model_path)
             
             # Apply dynamic quantization for ultra-fast CPU inference
             if self.device.type == 'cpu':
-                print("Applying dynamic quantization to model for faster CPU inference...")
+                print("Applying dynamic quantization to model for faster CPU inference...", flush=True)
                 self.model = torch.quantization.quantize_dynamic(
                     self.model, {torch.nn.Linear}, dtype=torch.qint8
                 )
@@ -36,8 +48,9 @@ class FakeNewsPredictor:
             self.model.to(self.device)
             self.model.eval()
             self.is_loaded = True
+            print("DEBUG: Model loaded successfully!", flush=True)
         except Exception as e:
-            print(f"Error loading model from {model_path}. Please train it first. Error: {e}")
+            print(f"DEBUG: Error loading model from {model_path}. Error: {e}", flush=True)
             self.is_loaded = False
             
     def predict(self, text):

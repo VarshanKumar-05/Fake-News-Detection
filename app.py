@@ -285,7 +285,7 @@ def render_prediction_card(result, article=None):
 
     with col3:
         fig = create_gauge_chart(result["confidence"], is_fake)
-        st.plotly_chart(fig, width="stretch", config={'displayModeBar': False})
+        st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
         
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -333,10 +333,7 @@ with st.sidebar:
     
     <hr style="border-color: rgba(255,255,255,0.1); margin: 20px 0;">
     
-    
     """, unsafe_allow_html=True)
-
-
 
 st.markdown("""
 <div class="hero-container">
@@ -351,25 +348,49 @@ st.markdown("""
 # ==========================================
 # 🌐 TABS
 # ==========================================
-tab1, tab2, tab3 = st.tabs(["🌍 LIVE NEWS MONITOR", "📝 MANUAL NEWS VERIFICATION", "📊 AI ANALYTICS DASHBOARD"])
+tab1, tab2, tab3 = st.tabs([
+    "🌍 LIVE NEWS MONITOR",
+    "📝 MANUAL NEWS VERIFICATION",
+    "📊 AI ANALYTICS DASHBOARD"
+])
 
+# ==========================================
+# 🌍 TAB 1 - LIVE NEWS
+# ==========================================
 with tab1:
     st.markdown("""
     <div style="margin-bottom: 20px;">
-        <h3 style="color: #E2E8F0; margin-bottom: 5px;">Real-Time News Monitoring</h3>
-        <p style="color: #94a3b8;">Fetch and analyze live headlines from global news sources using AI-powered semantic and linguistic analysis.</p>
+        <h3 style="color: #E2E8F0; margin-bottom: 5px;">
+            Real-Time News Monitoring
+        </h3>
+        <p style="color: #94a3b8;">
+            Fetch and analyze live headlines from global news sources using
+            AI-powered semantic and linguistic analysis.
+        </p>
     </div>
     """, unsafe_allow_html=True)
-    
+
     col_s, col_b = st.columns([4, 1])
+
     with col_s:
-        query = st.text_input("Search", value="technology, politics, sports...", label_visibility="collapsed")
+        query = st.text_input(
+            "Search",
+            value="technology, politics, sports...",
+            label_visibility="collapsed"
+        )
+
     with col_b:
-        do_fetch = st.button("🚀 FETCH & ANALYZE", width="stretch")
-        
+        do_fetch = st.button(
+            "🚀 FETCH & ANALYZE",
+            use_container_width=True
+        )
+
     if do_fetch:
         with st.spinner("Connecting to global feeds..."):
-            articles = fetch_live_news(query=query.split(",")[0] if query else "technology")
+            articles = fetch_live_news(
+                query=query.split(",")[0] if query else "technology"
+            )
+
             if articles and "Error" not in articles[0].get("title", ""):
                 for article in articles[:5]:
                     if article.get('title'):
@@ -378,16 +399,33 @@ with tab1:
             else:
                 st.error("Failed to fetch news or API key missing.")
 
+# ==========================================
+# 📝 TAB 2 - MANUAL VERIFICATION
+# ==========================================
 with tab2:
     st.markdown("""
     <div style="margin-bottom: 20px;">
-        <h3 style="color: #E2E8F0; margin-bottom: 5px;">Manual News Verification</h3>
-        <p style="color: #94a3b8;">Paste any article, social media post, or suspicious headline to detect whether it is REAL or FAKE.</p>
+        <h3 style="color: #E2E8F0; margin-bottom: 5px;">
+            Manual News Verification
+        </h3>
+        <p style="color: #94a3b8;">
+            Paste any article, social media post, or suspicious headline
+            to detect whether it is REAL or FAKE.
+        </p>
     </div>
     """, unsafe_allow_html=True)
-    
-    user_text = st.text_area("Input", height=150, placeholder="Paste suspicious news content here...", label_visibility="collapsed")
-    if st.button("🔍 ANALYZE NEWS", width="content"):
+
+    user_text = st.text_area(
+        "Input",
+        height=150,
+        placeholder="Paste suspicious news content here...",
+        label_visibility="collapsed"
+    )
+
+    if st.button(
+        "🔍 ANALYZE NEWS",
+        use_container_width=True
+    ):
         if len(user_text) > 5:
             with st.spinner("Initializing Deep Scan..."):
                 res = predictor.predict(user_text)
@@ -395,39 +433,155 @@ with tab2:
         else:
             st.warning("Please enter more text to analyze.")
 
+# ==========================================
+# 📊 TAB 3 - ANALYTICS DASHBOARD
+# ==========================================
 with tab3:
     st.markdown("""
     <div style="margin-bottom: 20px;">
-        <h3 style="color: #E2E8F0; margin-bottom: 5px;">System Analytics</h3>
-        <p style="color: #94a3b8;">Live performance metrics and historical threat detection data.</p>
+        <h3 style="color: #E2E8F0; margin-bottom: 5px;">
+            System Analytics
+        </h3>
+        <p style="color: #94a3b8;">
+            Live performance metrics and historical threat detection data.
+        </p>
     </div>
     """, unsafe_allow_html=True)
-    
+
     c1, c2, c3, c4 = st.columns(4)
-    with c1: st.markdown('<div class="glass-card" style="text-align:center;"><div style="color:#94a3b8; font-size:0.9rem;">Articles Analyzed Today</div><div style="color:#00E5FF; font-size:2rem; font-weight:bold;">1,284</div></div>', unsafe_allow_html=True)
-    with c2: st.markdown('<div class="glass-card" style="text-align:center;"><div style="color:#94a3b8; font-size:0.9rem;">Fake News Detected</div><div style="color:#FF0055; font-size:2rem; font-weight:bold;">412</div></div>', unsafe_allow_html=True)
-    with c3: st.markdown('<div class="glass-card" style="text-align:center;"><div style="color:#94a3b8; font-size:0.9rem;">Average Confidence</div><div style="color:#10b981; font-size:2rem; font-weight:bold;">94.2%</div></div>', unsafe_allow_html=True)
-    with c4: st.markdown('<div class="glass-card" style="text-align:center;"><div style="color:#94a3b8; font-size:0.9rem;">Avg Response Time</div><div style="color:#00E5FF; font-size:2rem; font-weight:bold;">0.42s</div></div>', unsafe_allow_html=True)
+
+    with c1:
+        st.markdown(
+            '''
+            <div class="glass-card" style="text-align:center;">
+                <div style="color:#94a3b8; font-size:0.9rem;">
+                    Articles Analyzed Today
+                </div>
+                <div style="color:#00E5FF; font-size:2rem; font-weight:bold;">
+                    1,284
+                </div>
+            </div>
+            ''',
+            unsafe_allow_html=True
+        )
+
+    with c2:
+        st.markdown(
+            '''
+            <div class="glass-card" style="text-align:center;">
+                <div style="color:#94a3b8; font-size:0.9rem;">
+                    Fake News Detected
+                </div>
+                <div style="color:#FF0055; font-size:2rem; font-weight:bold;">
+                    412
+                </div>
+            </div>
+            ''',
+            unsafe_allow_html=True
+        )
+
+    with c3:
+        st.markdown(
+            '''
+            <div class="glass-card" style="text-align:center;">
+                <div style="color:#94a3b8; font-size:0.9rem;">
+                    Average Confidence
+                </div>
+                <div style="color:#10b981; font-size:2rem; font-weight:bold;">
+                    94.2%
+                </div>
+            </div>
+            ''',
+            unsafe_allow_html=True
+        )
+
+    with c4:
+        st.markdown(
+            '''
+            <div class="glass-card" style="text-align:center;">
+                <div style="color:#94a3b8; font-size:0.9rem;">
+                    Avg Response Time
+                </div>
+                <div style="color:#00E5FF; font-size:2rem; font-weight:bold;">
+                    0.42s
+                </div>
+            </div>
+            ''',
+            unsafe_allow_html=True
+        )
 
     c_left, c_right = st.columns(2)
+
+    # ==========================================
+    # PIE CHART
+    # ==========================================
     with c_left:
         st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-        st.markdown("<h4 style='text-align:center; color:#E2E8F0;'>Detection Distribution</h4>", unsafe_allow_html=True)
-        fig_pie = px.pie(values=[872, 412], names=['Real News', 'Fake News'], hole=0.7, 
-                         color_discrete_sequence=["#00E5FF", "#FF0055"])
-        fig_pie.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", margin=dict(t=0, b=0, l=0, r=0), font=dict(color='white'))
-        st.plotly_chart(fig_pie, width="stretch")
+        st.markdown(
+            "<h4 style='text-align:center; color:#E2E8F0;'>"
+            "Detection Distribution"
+            "</h4>",
+            unsafe_allow_html=True
+        )
+
+        fig_pie = px.pie(
+            values=[872, 412],
+            names=['Real News', 'Fake News'],
+            hole=0.7,
+            color_discrete_sequence=["#00E5FF", "#FF0055"]
+        )
+
+        fig_pie.update_layout(
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            margin=dict(t=0, b=0, l=0, r=0),
+            font=dict(color='white')
+        )
+
+        st.plotly_chart(
+            fig_pie,
+            use_container_width=True
+        )
         st.markdown('</div>', unsafe_allow_html=True)
 
+    # ==========================================
+    # LINE CHART
+    # ==========================================
     with c_right:
         st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-        st.markdown("<h4 style='text-align:center; color:#E2E8F0;'>Threat Activity Timeline (7 Days)</h4>", unsafe_allow_html=True)
+        st.markdown(
+            "<h4 style='text-align:center; color:#E2E8F0;'>"
+            "Threat Activity Timeline (7 Days)"
+            "</h4>",
+            unsafe_allow_html=True
+        )
+
         df = pd.DataFrame({
             'Day': ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
             'Fake News Hits': [45, 62, 38, 89, 120, 55, 41]
         })
-        fig_line = px.line(df, x='Day', y='Fake News Hits', markers=True, color_discrete_sequence=["#FF0055"])
-        fig_line.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", 
-                               xaxis=dict(showgrid=False), yaxis=dict(showgrid=True, gridcolor="rgba(255,255,255,0.1)"), font=dict(color='white'))
-        st.plotly_chart(fig_line, width="stretch")
+
+        fig_line = px.line(
+            df,
+            x='Day',
+            y='Fake News Hits',
+            markers=True,
+            color_discrete_sequence=["#FF0055"]
+        )
+
+        fig_line.update_layout(
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            xaxis=dict(showgrid=False),
+            yaxis=dict(
+                showgrid=True,
+                gridcolor="rgba(255,255,255,0.1)"
+            ),
+            font=dict(color='white')
+        )
+
+        st.plotly_chart(
+            fig_line,
+            use_container_width=True
+        )
         st.markdown('</div>', unsafe_allow_html=True)

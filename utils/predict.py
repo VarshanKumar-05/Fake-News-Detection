@@ -1,6 +1,6 @@
 import torch
 import numpy as np
-from transformers import DistilBertTokenizer, DistilBertForSequenceClassification
+from transformers import AutoTokenizer, DistilBertForSequenceClassification
 import re
 from .preprocessing import clean_text
 import os
@@ -35,7 +35,7 @@ class FakeNewsPredictor:
         print("="*50 + "\n", flush=True)
         
         try:
-            self.tokenizer = DistilBertTokenizer.from_pretrained(model_path)
+            self.tokenizer = AutoTokenizer.from_pretrained(model_path)
             self.model = DistilBertForSequenceClassification.from_pretrained(model_path)
             
             # Apply dynamic quantization for ultra-fast CPU inference
